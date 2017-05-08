@@ -1,0 +1,69 @@
+<#import "/template/main.html" as layout/>
+<@layout.mainLayout>
+<main class="container">
+    <div>
+        <div>
+            <button onclick="refresh_users();">Обновить</button>
+        </div>
+        <div>
+            <button onclick="back_link()">К реестру задач</button>
+        </div>
+    </div>
+    <table id="users">
+        <thead>
+            <tr>
+                <td>Логин</td>
+                <td>Права доступа</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</main>
+<script>
+    $(document).ready(function(){
+        refresh_users();
+    });
+
+    function back_link(){
+        window.location.href = "${contextPath}/task/registry"
+    }
+
+    function refresh_users(){
+        $.ajax({
+            url: '${contextPath}/users/get/all',
+            type: 'GET',
+            success: function(result)
+            {
+                fillTable(result);
+            }
+        });
+    }
+
+    function fillTable(json){
+        var sample = '<select name="role">' +
+                '<#list roles as role>' +
+                '<option value=${role.id?c}>${role.name}</option>' +
+                '</#list>' +
+                '</select>';
+        var table = $('#users tbody');
+        table.find('tr').remove();
+        for (var i in json) {
+            debugger;
+            var txt = '<tr id="'+json[i].id+'"><td>'+json[i].login+'</td>' +
+                    '<td>'+sample+'</td></tr>';
+            table.append(txt);
+            var select = table.find('tr').last().find('select');
+            select.val(json[i].role.id).on('change', function(){
+                debugger;
+                var id = $(this).parent().parent().attr('id');
+                $.ajax({
+                    url: '${contextPath}/users/change_role',
+                    type: 'GET',
+                    data: {id: id, role_id: this.value}
+                });
+            });
+        }
+    }
+</script>
+</@layout.mainLayout>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <beans:import resource="db-beans.xml"/>
+
+    <beans:import resource="security.xml"/>
+
+    <resources mapping="/js/**" location="/pages/js/"/>
+
+    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <beans:property name="ignoreResourceNotFound" value="true"/>
+        <beans:property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <beans:property name="locations">
+            <beans:list>
+                <beans:value>classpath:config.properties</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <beans:property name="cache" value="true"/>
+        <beans:property name="prefix" value=""/>
+        <beans:property name="suffix" value=".html"/>
+        <beans:property name="contentType" value="text/html;charset=UTF-8"/>
+    </beans:bean>
+
+    <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <beans:property name="templateLoaderPath" value="/pages/views/"/>
+    </beans:bean>
+
+    <interceptors>
+        <beans:bean class="com.myapp.util.CommonHandlerInterceptor"/>
+    </interceptors>
+
+    <context:component-scan base-package="com.myapp"/>
+</beans:beans>

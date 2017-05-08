@@ -1,0 +1,23 @@
+<#import "template/main.html" as layout/>
+<@layout.mainLayout>
+<main>
+    <form id="login_inputs">
+        <div>
+            <p><b>Логин:</b><br>
+                <input name="username" type="text">
+        </div>
+        <div>
+            <p><b>Пароль:</b><br>
+                <input name="password" type="password">
+        </div>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        <button type="submit" formmethod="POST">Войти</button>
+        <button onclick="{registration(); return false;}">Регистрация</button>
+    </form>
+</main>
+<script>
+    function registration(){
+        window.location.href = "${contextPath}/register";
+    }
+</script>
+</@layout.mainLayout>

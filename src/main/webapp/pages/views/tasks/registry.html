@@ -1,0 +1,56 @@
+<#import "../template/main.html" as layout/>
+<@layout.mainLayout>
+<main>
+    <div>
+        <#if currentUser.role.role!='user'>
+            <div>
+                <button onclick='{window.location.href="${contextPath}/task/form"}'>Создать новую задачу</button>
+            </div>
+        </#if>
+        <#if currentUser.role.role=='admin'>
+            <div>
+                <button onclick='{window.location.href="${contextPath}/users/registry"}'>К реестру пользователей</button>
+            </div>
+        </#if>
+        <div>
+            <button onclick="refresh_registry()">Обновить</button>
+        </div>
+        <div>
+            <button onclick='{logout();}'>Выйти</button>
+        </div>
+        <ul id="task_list">Список задач:</ul>
+    </div>
+</main>
+<script>
+    $(document).ready(function(){
+        refresh_registry();
+    });
+
+    function refresh_registry() {
+        $.ajax({
+            url: '${contextPath}/task/get/all',
+            type: 'GET',
+            success: function(result)
+            {
+                var ul = $('#task_list');
+                ul.find('li').remove();
+                for (var i in result) {
+                    var txt = '<li onclick="open_task(this)" id="'+result[i].id+'">Название: '+result[i].name+'</br>' +
+                            'Дата начала: '+result[i].startDate+'</br>' +
+                            'Дата оконцания: '+result[i].finishDate+'</br>' +
+                            'Комментарий: '+result[i].comment+'</br>' +
+                            'Дата создания: '+result[i].creationDate+'</br>' +
+                            'Статус: '+result[i].status.status+'</br></br>' +
+                            '</li>';
+                    ul.append(txt);
+                }
+            }
+            });
+        }
+
+    function open_task(li){
+        var id = $(li).attr('id');
+        window.location = '${contextPath}/task/form?id='+id;
+    }
+    </script>
+</@layout.mainLayout>

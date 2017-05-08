@@ -1,0 +1,118 @@
+<#import "../template/main.html" as layout/>
+<@layout.mainLayout>
+<main class="container">
+    <div>
+        <div>
+            <button onclick="back_link()">К реестру задач</button>
+        </div>
+    </div>
+    <div id="task_inputs">
+        <input name="id" type="hidden">
+        <div>
+            <p><b>Имя задачи:</b><br>
+            <input name="name" type="text">
+        </div>
+        <div>
+            <p><b>Дата начала:</b><br>
+            <input name="startDate" type="date">
+        </div>
+        <div>
+            <p><b>Дата окончания:</b><br>
+            <input name="finishDate" type="date">
+        </div>
+        <div>
+            <p><b>Комментарий:</b><br>
+            <input name="comment" type="text">
+        </div>
+        <#if task??>
+        <div>
+            <p><b>Статус:</b><br>
+                <select name="status">
+                    <#list statuses as status>
+                        <option value=${status.id?c} ${(task.status.id==status.id)?then('selected', '')}>${status.status}</option>
+                    </#list>
+                </select>
+        </div>
+        </#if>
+        <div>
+            <p><b>Исполнитель:</b><br>
+                <select name="userId">
+                    <#list employees as employee>
+                        <option value=${employee.id?c} ${(task??)?then((task.userId==employee.id)?then('selected', ''), '')}>${employee.login}</option>
+                    </#list>
+                </select>
+        </div>
+    </div>
+    <div>
+        <button id="save_btn" onclick="save_task()">Сохранить</button>
+        <#if currentUser.role.role!="user">
+            <button id="delete_btn" onclick="delete_task()">Удалить</button>
+        </#if>
+    </div>
+    </div>
+</main>
+<script>
+    var statuses = [];
+    var employees = [];
+    $(document).ready(function(){
+        <#if (task??)>
+            var inputs = $('#task_inputs');
+            inputs.find('[name="id"]').val("${task.id}");
+            inputs.find('[name="name"]').val("${task.name}").attr('disabled'${(currentUser.role.role=="user")?then(",''", "")});
+            inputs.find('[name="startDate"]').val("${task.startDate}").attr('disabled'${(currentUser.role.role=="user")?then(",''", "")});
+            inputs.find('[name="finishDate"]').val("${task.finishDate}").attr('disabled'${(currentUser.role.role=="user")?then(",''", "")});
+            inputs.find('[name="userId"]').attr('disabled'${(currentUser.role.role=="user")?then(",''", "")});
+            inputs.find('[name="comment"]').val("${task.comment}");
+        </#if>
+        <#list statuses as status>
+            statuses.push({id: ${status.id?c}, status: "${status.status}"});
+        </#list>
+    });
+
+    function back_link(){
+        window.location.href="${contextPath}/task/registry"
+    }
+
+    function save_task(){
+        var data = getFormData('task_inputs');
+        var now = new Date();
+        data['creationDate']=now.getFullYear()+'-'+now.getMonth()+'-'+now.getDate();
+        data.status = statuses.find(function(elem, index, arr){return elem.id == data.status});
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "${_csrf.headerName}":"${_csrf.token}"
+            },
+            url: '${contextPath}/task/create',
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function(result)
+            {
+                alert('Success!');
+                back_link();
+            }
+        });
+    }
+    <#if currentUser.role.role!='user'>
+    function delete_task() {
+        var id = $('#task_inputs [name="id"]').val();
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "${_csrf.headerName}":"${_csrf.token}"
+            },
+            url: '${contextPath}/task/delete',
+            type: 'GET',
+            data: {id: id},
+            success: function(result)
+            {
+                alert('Success!');
+                back_link();
+            }
+        });
+    }
+    </#if>
+</script>
+</@layout.mainLayout>

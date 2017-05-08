@@ -1,0 +1,16 @@
+com\myapp\database\repository\RoleRepository.class
+com\myapp\database\entity\Status.class
+com\myapp\util\CommonHandlerInterceptor.class
+com\myapp\database\repository\StatusRepository.class
+com\myapp\database\entity\User.class
+com\myapp\util\AppConfig.class
+com\myapp\services\TaskService.class
+com\myapp\database\entity\Role.class
+com\myapp\controller\TaskController.class
+com\myapp\database\repository\TaskRepository.class
+com\myapp\services\UserService.class
+com\myapp\controller\MainController.class
+com\myapp\database\entity\Task.class
+com\myapp\controller\UserController.class
+com\myapp\util\WebAuthProvider.class
+com\myapp\database\repository\UserRepository.class

@@ -1,0 +1,67 @@
+<#import "../template/main.html" as layout/>
+<@layout.mainLayout>
+<main class="container">
+    <div>
+        <div>
+            <button onclick="back_link()">Назад</button>
+        </div>
+    </div>
+    <div id="register_inputs">
+        <div>
+            <p><b>Логин:</b><br>
+                <input name="login" type="text">
+        </div>
+        <div>
+            <p><b>Пароль:</b><br>
+                <input name="password" type="password">
+        </div>
+        <div>
+            <p><b>Роль:</b><br>
+                <select name="role">
+                    <#list roles as role>
+                        <option value=${role.id?c}>${role.name}</option>
+                    </#list>
+                </select>
+        </div>
+    </div>
+    <div>
+        <button id="save_btn" onclick="register()">Сохранить</button>
+    </div>
+    </div>
+</main>
+<script>
+    var roles=[];
+
+    $(document).ready(function(){
+        <#list roles as role>
+        roles.push({id: ${role.id?c}, role: "${role.role}", name: "${role.name}"});
+        </#list>
+    });
+
+    function back_link(){
+        window.location.href="${contextPath}/login"
+    }
+
+    function register(){
+        var data = getFormData('register_inputs');
+        data.role = roles.find(function(element, index, array){return element.id==data.role;});
+        debugger;
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "${_csrf.headerName}":"${_csrf.token}"
+            },
+            url: '${contextPath}/register',
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function(result)
+            {
+                debugger;
+                alert('Success!');
+                back_link();
+            }
+        });
+    }
+</script>
+</@layout.mainLayout>
